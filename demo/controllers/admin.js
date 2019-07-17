@@ -1,7 +1,7 @@
 const log4js = require('log4js');
 const logger = log4js.getLogger('controller/admin');
-const models = require('../../models/admin/index');
-const authutil = require('../../libs/authutil');
+const models = require('../models/admin');
+const authutil = require('../libs/authutil');
 
 /**
  * @function 登录接口函数
