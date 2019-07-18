@@ -1,3 +1,6 @@
+/**
+ * 该部分为路由验证中间件，可根据自己的需求添加验证规则（如验证token）
+ */
 const log4js = require('log4js');
 const logger = log4js.getLogger('signcheck');
 

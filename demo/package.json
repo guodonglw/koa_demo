@@ -22,6 +22,7 @@
     "koa-static-cache": "^5.1.2",
     "koa-views": "^6.2.0",
     "log4js": "^4.3.2",
+    "mongodb": "^3.2.7",
     "mysql": "^2.17.1",
     "pug": "^2.0.3"
   },

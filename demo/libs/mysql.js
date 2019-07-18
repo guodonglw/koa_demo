@@ -1,13 +1,16 @@
+/**
+ * 该部分为通过sql语句连接mysql进行查询的代码，对应admin相关的操作
+ */
 var mysql = require('mysql');
 var config = require('../config/default.js');
 
 // mysql数据库建立连接池
 var pool  = mysql.createPool({
-  host     : config.database.HOST,
-  user     : config.database.USERNAME,
-  password : config.database.PASSWORD,
-  database : config.database.DATABASE,
-  port     : config.database.PORT
+  host: config.database.HOST,
+  user: config.database.USERNAME,
+  password: config.database.PASSWORD,
+  database: config.database.DATABASE,
+  port: config.database.PORT
 });
 
 // 连接数据库进行查询
