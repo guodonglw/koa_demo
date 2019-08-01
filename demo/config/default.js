@@ -20,9 +20,15 @@ const config = {
   },
 
   // 如果用的是mongo数据库，对应的mongo配置
-  mongoConfig: {
+  mongoConfig: {    
     url: '',
     dbname: ''
+  },
+
+  // 如果使用到了redis数据库，对应的redis配置
+  redisConfig: {
+    host: '',
+    port: ''
   }
 };
 

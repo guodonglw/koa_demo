@@ -12,6 +12,6 @@
   },
   "replaceConsole": true,
   "categories": {
-    "default": {"appenders": ["ruleConsole", "ruleFile"], "level": "info"}
+    "default": {"appenders": ["ruleFile"], "level": "info"}
   }
 }
