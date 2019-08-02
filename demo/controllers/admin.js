@@ -26,6 +26,10 @@ exports.loginSystem = async ctx => {
   // 如果管理员存在且为1，则继续核实密码
   if (lengthAdmin === 1 && checkPassword) {
     logger.info('登录成功');
+    // 设置服务器端session内容，用于路由中间验证
+    ctx.session = {
+      test: 'test'
+    };
     ctx.body = {
       code: 200,
       message: '登录成功'

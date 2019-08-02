@@ -26,6 +26,20 @@ app.use(session({
   }
 }));
 
+// 设置cookies的签名
+app.keys = ['test'];
+app.use(async (ctx, next) => {
+  ctx.cookies.set('key', 'value', {
+    domain: 'localhost', 
+    signed: true, 
+    path: '/',
+    maxAge: 10 * 60 * 1000, 
+    httpOnly: false,
+    overwrite: false
+  })
+  await next()
+})
+
 // 用于缓存静态资源
 app.use(staticCache(path.join(__dirname, './public'), {dynamic: true}, {
   maxAge: 30 * 24 * 60 * 60

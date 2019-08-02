@@ -4,18 +4,17 @@ const admin = require('../controllers/admin');
 const user = require('../controllers/user');
 const redis = require('../controllers/redisTest')
 
-
 // admin相关路由
 router.get('/admin', signCheck, admin.loginSystem);
 
 // user相关路由
-router.post('/user/insert', signCheck, user.insertUser);
-router.del('/user/delete', signCheck, user.delUser);
-router.post('/user/update', signCheck, user.updateUser);
-router.get('/user/find', signCheck, user.findUser);
+router.put('/user', signCheck, user.insertUser);
+router.del('/user', signCheck, user.delUser);
+router.post('/user', signCheck, user.updateUser);
+router.get('/user', signCheck, user.findUser);
 
 // redis测试
-router.get('/redis/set', signCheck, redis.setData);
-router.get('/redis/get', signCheck, redis.getData)
+router.put('/redis', signCheck, redis.setData);
+router.get('/redis', signCheck, redis.getData)
 
 module.exports = router;
