@@ -74,30 +74,7 @@ http.createServer(app.callback()).listen(config.port, () => {
   logger.info("listening on port: http://127.0.0.1:" + config.port)
 });
 
-/*
-var server = http.createServer(app.callback())
-
-// 开启子进程
-var worker;
-process.on('message', (m, tcp) => {
-  if (m === 'server') {
-    worker = tcp;
-    worker.on('connection', (socket) => {
-      server.emit('connection', socket)
-    })
-  }
-})
-
-// 子进程异常退出
 process.on('uncaughtException', (err) => {
-  logger.error('子进程err: ', err)
-  process.send({act: 'suicide'})  // 发送自杀信号
-  worker.on('close', () => {
-    process.exit(1)
-  });
-  // 超时退出
-  setTimeout(() => {
-    process.exit(1)
-  }, 5000)
+  logger.error('子进程内部错误：', err);
+  process.exit(1)
 })
-*/
