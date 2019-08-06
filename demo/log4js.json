@@ -10,6 +10,7 @@
       "alwaysIncludePattern": true
     }
   },
+  "disableClustering": true,
   "replaceConsole": true,
   "categories": {
     "default": {"appenders": ["ruleFile"], "level": "info"}

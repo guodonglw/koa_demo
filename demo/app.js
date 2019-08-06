@@ -69,12 +69,12 @@ app.on('error', (err, ctx) => {
 })
 
 // 监听端口，构建服务器
-/*
-var server = http.createServer(app.callback()).listen(config.port, () => {
+http.createServer(app.callback()).listen(config.port, () => {
   logger.info("server start");
   logger.info("listening on port: http://127.0.0.1:" + config.port)
 });
-*/
+
+/*
 var server = http.createServer(app.callback())
 
 // 开启子进程
@@ -100,3 +100,4 @@ process.on('uncaughtException', (err) => {
     process.exit(1)
   }, 5000)
 })
+*/
