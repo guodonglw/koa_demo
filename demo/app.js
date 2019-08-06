@@ -6,6 +6,7 @@ const koa = require('koa');
 const path = require('path');
 const bodyParser = require('koa-bodyparser');
 const session = require('koa-session-minimal');
+const views = require('koa-views');
 const log4js = require('log4js');
 const http = require('http');
 const staticCache = require('koa-static-cache');
@@ -40,13 +41,20 @@ app.use(async (ctx, next) => {
   await next()
 })
 
-// 用于缓存静态资源
+// 配置解析请求中间件
+app.use(bodyParser({
+  enableTypes: ['json', 'form', 'text']
+}));
+
+// 用于缓存公共资源
 app.use(staticCache(path.join(__dirname, './public'), {dynamic: true}, {
   maxAge: 30 * 24 * 60 * 60
 }));
 
-// 配置解析请求中间件
-app.use(bodyParser());
+// 用于加载静态页面
+app.use(views(path.join(__dirname, './views'), {
+  extension: 'pug'
+}))
 
 // 配置路由（中间件需写成方法的形式）
 app.use(routers.routes());
@@ -55,8 +63,40 @@ app.use(routers.routes());
 log4js.configure(log4jsConfig);
 var logger = log4js.getLogger('index');
 
+// 监听错误事件
+app.on('error', (err, ctx) => {
+  logger.error('server error: ', err, ctx);
+})
+
 // 监听端口，构建服务器
-http.createServer(app.callback()).listen(config.port, function () {
+/*
+var server = http.createServer(app.callback()).listen(config.port, () => {
   logger.info("server start");
   logger.info("listening on port: http://127.0.0.1:" + config.port)
 });
+*/
+var server = http.createServer(app.callback())
+
+// 开启子进程
+var worker;
+process.on('message', (m, tcp) => {
+  if (m === 'server') {
+    worker = tcp;
+    worker.on('connection', (socket) => {
+      server.emit('connection', socket)
+    })
+  }
+})
+
+// 子进程异常退出
+process.on('uncaughtException', (err) => {
+  logger.error('子进程err: ', err)
+  process.send({act: 'suicide'})  // 发送自杀信号
+  worker.on('close', () => {
+    process.exit(1)
+  });
+  // 超时退出
+  setTimeout(() => {
+    process.exit(1)
+  }, 5000)
+})

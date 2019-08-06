@@ -30,6 +30,7 @@ exports.setData = async ctx => {
  */
 exports.getData = async ctx => {
   logger.info('从redis读取数据: ' + JSON.stringify(ctx.request.body));
+  logger.info('pid is: ', process.pid)
   let req = ctx.request.body;
   await redisGet(0, 'test')
   .then((result) => {
