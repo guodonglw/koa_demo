@@ -23,7 +23,7 @@ start() {
   if [ ! -z $pid ]; then
     echo 'server is already running'
   else 
-    $NODE $DIR/cluster.js 2>&1 &
+    $NODE $DIR/clusterEntrance.js 2>&1 &
     echo 'server is running'
   fi
 }
