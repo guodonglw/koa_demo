@@ -11,13 +11,15 @@ const authutil = require('../libs/authutil');
 exports.loginSystem = async ctx => {
   logger.info("用户登录：" + JSON.stringify(ctx.request.body));
   let { name, password } = ctx.request.body;
+  var lengthAdmin = 0;
+  var checkPassword = false;
   // 查询该管理员信息
   await models.findAdmin(name)
     .then(result => {
       lengthAdmin = result.length;
       checkPassword = (authutil.MD5(password) === result[0].Password)
     }).catch(err => {
-      logger.info(err);
+      // logger.info(err);
       ctx.body = {
         code: 500,
         message: err

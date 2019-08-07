@@ -5,15 +5,22 @@ var redis = require('redis');
 var log4js = require('log4js');
 var logger = log4js.getLogger('/libs/redis')
 var redisConfig = require('../config/default').redisConfig;
-var client = redis.createClient(redisConfig.port, redisConfig.host);
 
-client.on('error', function(err) {
-  logger.error('redis error: ' + err)
-})
+// 初始化redis连接
+var init = function() {
+  var client = redis.createClient(redisConfig.port, redisConfig.host);
 
-client.on('connect', function(err) {
-  logger.info('redis连接成功...')
-})
+  client.on('error', function(err) {
+    logger.error('redis error: ' + err)
+  })
+  
+  client.on('connect', function(err) {
+    logger.info('redis连接成功...')
+  })
+
+  return client
+}
+
 
 // 该处为对数据库操作时间过长时则终止操作并放回提示
 var timeout = function(ms) {
@@ -35,6 +42,7 @@ var timeout = function(ms) {
  * @param {*} expire 过期时间
  */
 var set = function(dbNum, key, value, expire) {
+  let client = init();
   return new Promise((resolve, reject) => {
     client.select(dbNum, (err) => {
       if(err) {
@@ -63,6 +71,7 @@ var set = function(dbNum, key, value, expire) {
  * @param {*} key 
  */
 var get = function(dbNum, key) {
+  let client = init();
   return new Promise((resolve, reject) => {
     client.select(dbNum, (err) => {
       if (err) {
