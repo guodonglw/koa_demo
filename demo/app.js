@@ -53,11 +53,19 @@ app.use(staticCache(path.join(__dirname, './public'), {dynamic: true}, {
 
 // 用于加载静态页面
 app.use(views(path.join(__dirname, './views'), {
-  extension: 'pug'
+  extension: 'ejs'
 }))
 
 // 配置路由（中间件需写成方法的形式）
 app.use(routers.routes());
+
+// 使用ejs引擎渲染页面示例
+app.use( async ( ctx ) => {
+  let title = 'hello koa2'
+  await ctx.render('index', {
+      title
+  })
+})
 
 // 配置logjs日志打印模块
 log4js.configure(log4jsConfig);

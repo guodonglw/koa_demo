@@ -8,6 +8,7 @@ fs.writeFileSync(pidFile, process.pid);
 
 cluster.schedulingPolicy = cluster.SCHED_RR  // 启用轮叫调度，实现负载均衡
 
+// cluster复制的子进程执行文件
 cluster.setupMaster({
   exec: 'app.js'
 });
@@ -18,7 +19,6 @@ cluster.on('online', (m) => {
   var pid = m.process.pid;
   workers[pid] = m
 })
-
 
 var limit = 10;
 var during = 60000;

@@ -10,51 +10,90 @@ const logger = log4js.getLogger('/libs/mongo');
 var url = mongoConfig.url;  // 连接mongo的url
 var dbname = mongoConfig.dbname;  // 要操作的数据库
 
-var insert = function (collection, data, client, callback) {
-  collection.insert(data, function (err, result) {
-    if (err) {
-      logger.error(err)
-    } else {
-      logger.info('插入成功');
-      callback(result.result)
-    }
-    client.close()
+// 初始化连接数据库
+var init = () => {
+  return new Promise((resolve, reject) => {
+    MongoClient.connect(url, {useNewUrlParser:true}, (err, client) => {
+      if (err) {
+        logger.error('mongo连接失败');
+        reject(err)
+      } else {
+        logger.info('mongo连接成功');
+        resolve(client)
+      }
+    }); 
+  }) 
+}
+
+// 该处为对数据库操作时间过长时则终止操作并放回提示
+var timeout = function(ms) {
+  let delayInfo = {
+    timeoutMsg: '数据库操作超时'
+  };
+  return new Promise((resolve, reject) => {
+    setTimeout(function() {
+      reject(delayInfo)
+    }, ms)
+  })
+}
+
+var insert = (collection, data, client) => {
+  return new Promise((resolve, reject) => {
+    collection.insert(data, (err, result) => {
+      if (err) {
+        logger.error(err);
+        reject(err)
+      } else {
+        logger.info('插入成功');
+        resolve(result.result)
+      }
+      client.close()
+    })
+  }) 
+};
+
+var updateOne = (collection, data, client) => {
+  return new Promise((resolve, reject) => {
+    collection.updateOne(data[0], data[1],(err, result) => {
+      if (err) {
+        logger.error(err);
+        reject(err)
+      } else {
+        logger.info('更新成功');
+        resolve(result.result)
+      }
+      client.close()
+    })
+  })  
+};
+
+var deleteOne = (collection, data, client) => {
+  return new Promise((resolve, reject) => {
+    collection.deleteOne(data, (err, result) => {
+      if (err) {
+        logger.error(err);
+        reject(err)
+      } else {
+        logger.info('删除成功');
+        resolve(result.result)
+      }
+      client.close()
+    })
   })
 };
 
-var updateOne = function (collection, data, client, callback) {
-  collection.updateOne(data[0], data[1], function (err, result) {
-    if (err) {
-      logger.error(err)
-    } else {
-      logger.info('更新成功');
-      callback(result.result)
-    }
-    client.close()
-  })
-};
-
-var deleteOne = function (collection, data, client, callback) {
-  collection.deleteOne(data, function (err, result) {
-    if (err) {
-      logger.error(err)
-    } else {
-      logger.info('删除成功');
-      callback(result.result)
-    }
-    client.close()
-  })
-};
-
-var find = function (collection, data, client, callback) {
-  collection.find(data).toArray(function (err, result) {
-    if (err) {
-      logger.error(err)
-    } else {
-      logger.info('查询成功');
-      callback(result)
-    }
-    client.close()
+var find = (collection, data, client) => {
+  return new Promise((resolve, reject) => {
+    collection.find(data).toArray(function (err, result) {
+      if (err) {
+        logger.error(err);
+        reject(err)
+      } else {
+        logger.info('查询成功');
+        resolve(result)
+      }
+      client.close()
+    })
   })
 };
 
@@ -65,17 +104,23 @@ var method = {
   find: find
 };
 
-var operateData = function (type, collectionname, data, callback) {
-  MongoClient.connect(url, function (err, client) {
-    if (err) {
-      logger.error('连接mongo失败：' + err)
-    } else {
-      logger.info('连接mongo成功');
-      var db = client.db(dbname);
-      var collection = db.collection(collectionname);
-      // 增删改查
-      method[type](collection, data, client, callback)
-    }
+/**
+ * @function 外部接口调用mongo方法
+ * @param {*} type 
+ * @param {*} collectionname 
+ * @param {*} data 
+ */
+var operateData = function (type, collectionname, data) {
+  return new Promise((resolve, reject) => {
+    init()
+    .then((client) => {
+      var db = client.db(dbname);  // 查询数据库名
+      var collection = db.collection(collectionname);  // 查询集合名
+      resolve(method[type](collection, data, client));
+    }).catch((err) => {
+      console.log('err:',err)
+      reject(err)
+    })
   })
 };
 
